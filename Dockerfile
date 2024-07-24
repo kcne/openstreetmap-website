@@ -27,11 +27,9 @@ RUN apt-get update \
       ruby-bundler \
       software-properties-common \
       tzdata \
-      unzip
-
-# Install Node.js 18 and npm
-RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
- && apt-get install -y nodejs
+      unzip \
+      nodejs \
+      npm
 
 # Install yarn globally
 RUN npm install --global yarn \
