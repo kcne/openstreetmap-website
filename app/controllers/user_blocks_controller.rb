@@ -21,6 +21,7 @@ class UserBlocksController < ApplicationController
     user_blocks = UserBlock.all
 
     @user_blocks, @newer_user_blocks_id, @older_user_blocks_id = get_page_items(user_blocks, :includes => [:user, :creator, :revoker])
+    @user_blocks_count = user_blocks.count
   end
 
   def show
@@ -108,6 +109,7 @@ class UserBlocksController < ApplicationController
     user_blocks = UserBlock.where(:user => @user)
 
     @user_blocks, @newer_user_blocks_id, @older_user_blocks_id = get_page_items(user_blocks, :includes => [:user, :creator, :revoker])
+    @user_blocks_count = user_blocks.count
   end
 
   ##
@@ -118,6 +120,7 @@ class UserBlocksController < ApplicationController
     user_blocks = UserBlock.where(:creator => @user)
 
     @user_blocks, @newer_user_blocks_id, @older_user_blocks_id = get_page_items(user_blocks, :includes => [:user, :creator, :revoker])
+    @user_blocks_count = user_blocks.count
   end
 
   private
