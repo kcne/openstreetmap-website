@@ -32,19 +32,13 @@ RUN apt-get update \
   npm
 
 # Install yarn globally
-RUN npm install --global yarn \
-  # We can't use snap packages for Firefox inside a container, so we need to get Firefox+Geckodriver elsewhere
-  && apt-get update \
-  && apt-get install -y --no-install-recommends wget gnupg \
-  && wget -q -O - "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x9BDB3D89CE49EC21" | apt-key add - \
-  && wget -q -O - "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xA6DCF7707EBC211F" | apt-key add - \
-  && echo "deb http://ppa.launchpad.net/mozillateam/ppa/ubuntu focal main" > /etc/apt/sources.list.d/mozillateam-ppa.list \
-  && echo "Package: *\nPin: release o=LP-PPA-mozillateam\nPin-Priority: 1001" > /etc/apt/preferences.d/mozilla-firefox \
-  && apt-get update \
-  && apt-get install --no-install-recommends -y firefox firefox-geckodriver \
-  && apt-get clean \
-  && rm -rf /var/lib/apt/lists/*
+RUN npm install --global yarn
 
+# Install geckodriver and firefox
+RUN apt-get update                             \
+  && apt-get install -y --no-install-recommends \
+  ca-certificates curl firefox-esr           \
+  && curl -L https://github.com/mozilla/geckodriver/releases/download/v0.34.0/geckodriver-v0.34.0-linux64.tar.gz | tar xz -C /usr/local/bin
 
 # Install compatible Osmosis to help users import sample data in a new instance
 RUN curl -OL https://github.com/openstreetmap/osmosis/releases/download/0.47.2/osmosis-0.47.2.tgz \
