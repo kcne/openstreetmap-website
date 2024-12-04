@@ -226,3 +226,4 @@ $(document).ready(function () {
     $("#continue").prop("disabled", !($(this).prop("checked") && $("#read_ct").prop("checked")));
   });
 });
+

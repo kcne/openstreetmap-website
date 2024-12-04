@@ -3,6 +3,8 @@
 @import "browse";
 @import "bootstrap";
 @import "rails_bootstrap_forms";
+@import "cal-heatmap";
+
 
 /* Styles common to large and small screens */
 
@@ -991,4 +993,9 @@ img.trace_image {
       }
     }
   }
+}
+
+#cal-heatmap {
+  width: 100%;
+  height: 200px;
 }

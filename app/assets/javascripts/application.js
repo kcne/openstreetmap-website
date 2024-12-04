@@ -15,6 +15,10 @@
 //= require matomo
 //= require richtext
 //= require qs/dist/qs
+//= require d3
+//= require cal-heatmap
+//= require heatmap
+
 
 /*
  * Called as the user scrolls/zooms around to manipulate hrefs of the

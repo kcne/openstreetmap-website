@@ -7,6 +7,7 @@
 //= link_tree ../opensearch .xml
 //= link_directory ../stylesheets .css
 
+
 //= link_tree ../../../vendor/assets/iD/iD/img
 //= link_directory ../../../vendor/assets/iD/iD/data .json
 //= link_directory ../../../vendor/assets/iD/iD/locales .json

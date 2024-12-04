@@ -53,6 +53,30 @@ class UsersController < ApplicationController
     if @user &&
        (@user.visible? || current_user&.administrator?)
       @title = @user.display_name
+       # Fetch and aggregate changesets for the heatmap
+      one_year_ago = 1.year.ago
+
+      sql = <<~SQL
+        SELECT DATE(created_at) AS date,
+        COUNT(*) AS count,
+        SUM(num_changes) AS total_changes
+        FROM changesets
+        WHERE user_id = :user_id
+          AND created_at >= :one_year_ago
+          AND num_changes > 0
+        GROUP BY DATE(created_at)
+        ORDER BY DATE(created_at) ASC
+      SQL
+
+      # Execute the raw SQL
+      result = ActiveRecord::Base.connection.execute(
+        ActiveRecord::Base.sanitize_sql_array([sql, { user_id: @user.id, one_year_ago: one_year_ago }])
+      )
+
+      # Transform the result to timestamps for Cal-Heatmap
+      @heatmap_data = result.each_with_object({}) do |row, hash|
+        hash[row["date"].to_time.to_i] = row["total_changes"]
+    end
     else
       render_unknown_user params[:display_name]
     end

@@ -138,6 +138,7 @@ GEM
     builder (3.3.0)
     bzip2-ffi (1.1.1)
       ffi (~> 1.0)
+    cal-heatmap-rails (3.6.2)
     cancancan (3.6.1)
     canonical-rails (0.2.16)
       actionview (>= 4.1, < 7.3)
@@ -169,6 +170,8 @@ GEM
       bigdecimal
       rexml
     crass (1.0.6)
+    d3_rails (4.1.1)
+      railties (>= 3.1.0)
     dalli (3.2.8)
     danger (9.5.1)
       base64 (~> 0.2)
@@ -678,11 +681,13 @@ DEPENDENCIES
   brakeman
   browser (< 6)
   bzip2-ffi
+  cal-heatmap-rails (~> 3.6, >= 3.6.2)
   cancancan
   canonical-rails
   capybara (>= 2.15)
   config
   connection_pool
+  d3_rails
   dalli
   danger
   danger-auto_label

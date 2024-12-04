@@ -144,6 +144,10 @@ gem "unicode-display_width"
 # Lock some modules to old versions for ruby 3.1 support
 gem "zeitwerk", "< 2.7"
 
+gem "d3_rails"
+
+gem "cal-heatmap-rails", "~> 3.6", ">= 3.6.2"
+
 # Gems useful for development
 group :development do
   gem "better_errors"
