@@ -1073,7 +1073,10 @@ CREATE TABLE public.notes (
     updated_at timestamp without time zone NOT NULL,
     created_at timestamp without time zone NOT NULL,
     status public.note_status_enum NOT NULL,
-    closed_at timestamp without time zone
+    closed_at timestamp without time zone,
+    description text DEFAULT ''::text NOT NULL,
+    user_id bigint,
+    user_ip inet
 );
 
 
@@ -3397,6 +3400,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('23'),
 ('22'),
 ('21'),
+('20241231160355'),
+('20241224140952'),
 ('20241023004427'),
 ('20241022141247'),
 ('20240913171951'),
