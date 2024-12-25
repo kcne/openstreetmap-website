@@ -95,6 +95,11 @@ class Note < ApplicationRecord
     comments.first.author_ip
   end
 
+  # Return the note's description
+  def description
+    RichText.new("text", self[:description])
+  end
+
   private
 
   # Fill in default values for new notes
