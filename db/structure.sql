@@ -1,6 +1,7 @@
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
@@ -8,13 +9,6 @@ SET check_function_bodies = false;
 SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
-
---
--- Name: public; Type: SCHEMA; Schema: -; Owner: -
---
-
--- *not* creating schema, since initdb creates it
-
 
 --
 -- Name: btree_gist; Type: EXTENSION; Schema: -; Owner: -
@@ -1069,6 +1063,38 @@ CREATE TABLE public.note_subscriptions (
 
 
 --
+-- Name: note_versions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.note_versions (
+    note_id bigint NOT NULL,
+    latitude integer NOT NULL,
+    longitude integer NOT NULL,
+    tile bigint NOT NULL,
+    "timestamp" timestamp(6) without time zone NOT NULL,
+    status public.note_status_enum NOT NULL,
+    description text NOT NULL,
+    user_id bigint,
+    user_ip inet,
+    version bigint NOT NULL,
+    redaction_id integer,
+    sequence_id bigint NOT NULL
+);
+
+
+--
+-- Name: note_versions_sequence_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.note_versions_sequence_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
 -- Name: notes; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1083,7 +1109,9 @@ CREATE TABLE public.notes (
     closed_at timestamp without time zone,
     description text DEFAULT ''::text NOT NULL,
     user_id bigint,
-    user_ip inet
+    user_ip inet,
+    version bigint DEFAULT 1 NOT NULL,
+    last_sequence_id bigint
 );
 
 
@@ -1519,7 +1547,9 @@ CREATE TABLE public.users (
     tou_agreed timestamp without time zone,
     diary_comments_count integer DEFAULT 0,
     note_comments_count integer DEFAULT 0,
-    creation_address inet
+    creation_address inet,
+    hide_heatmap boolean DEFAULT false NOT NULL,
+    show_contribution_heatmap boolean DEFAULT true NOT NULL
 );
 
 
@@ -2039,6 +2069,14 @@ ALTER TABLE ONLY public.note_subscriptions
 
 
 --
+-- Name: note_versions note_versions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.note_versions
+    ADD CONSTRAINT note_versions_pkey PRIMARY KEY (note_id, version);
+
+
+--
 -- Name: notes notes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2555,10 +2593,31 @@ CREATE INDEX index_note_subscriptions_on_note_id ON public.note_subscriptions US
 
 
 --
+-- Name: index_note_versions_on_note_id_and_sequence_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_note_versions_on_note_id_and_sequence_id ON public.note_versions USING btree (note_id, sequence_id);
+
+
+--
+-- Name: index_note_versions_on_sequence_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_note_versions_on_sequence_id ON public.note_versions USING btree (sequence_id);
+
+
+--
 -- Name: index_notes_on_description; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_notes_on_description ON public.notes USING gin (to_tsvector('english'::regconfig, description));
+
+
+--
+-- Name: index_notes_on_last_sequence_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_notes_on_last_sequence_id ON public.notes USING btree (last_sequence_id);
 
 
 --
@@ -3256,6 +3315,14 @@ ALTER TABLE ONLY public.note_comments
 
 
 --
+-- Name: note_versions note_versions_redaction_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.note_versions
+    ADD CONSTRAINT note_versions_redaction_id_fkey FOREIGN KEY (redaction_id) REFERENCES public.redactions(id);
+
+
+--
 -- Name: notes notes_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3450,6 +3517,9 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('23'),
 ('22'),
 ('21'),
+('20250317000001'),
+('20250317000000'),
+('20250316212229'),
 ('20250304172798'),
 ('20250304172758'),
 ('20250212160355'),
