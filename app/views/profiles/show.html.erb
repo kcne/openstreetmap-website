@@ -1,0 +1,9 @@
+  <% if @user.home_location? %>
+    <%= render :partial => "map", :locals => { :location => @user.home_location } %>
+  <% end %>
+
+  <% unless @user.hide_heatmap %>
+    <%= render :partial => "heatmap", :locals => { :user => @user } %>
+  <% end %>
+
+  <% if @user.visible? %> 
